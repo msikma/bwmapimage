@@ -149,7 +149,7 @@ To downscale the resulting image, you only need to set one of `targetWidth` or `
 The `preHook` value can be used to manually do something with the [sharp](https://github.com/lovell/sharp) object before the image is finalized and returned. For example, here's a function that boosts the brightness of the generated images:
 
 ```js
-/** Convert Photoshop style levels to linear multiplier/offset values. */
+/** Converts Photoshop style levels to linear multiplier/offset values. */
 function levelsToLinear(min, max) {
   const a = 255 / (max - min)
   const b = -min * a
