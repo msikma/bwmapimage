@@ -1,0 +1,29 @@
+{
+  "name": "bwmapimage",
+  "version": "1.0.0",
+  "description": "Generates images of StarCraft: Remastered maps",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "lib/",
+    "index.js",
+    "package.json",
+    "license.md",
+    "readme.md"
+  ],
+  "keywords": [
+    "StarCraft"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bw-chk": "^1.3.0",
+    "jssuh": "^1.6.0",
+    "scm-extractor": "^1.0.6",
+    "sharp": "^0.30.3",
+    "xxhashjs": "^0.2.2"
+  }
+}
