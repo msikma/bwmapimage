@@ -1,6 +1,7 @@
-// bwmapimage <https://github.com/msikma/bwmapimage>
+// @dada78641/bwmapimage <https://github.com/msikma/bwmapimage>
 // © MIT license
 
+import {tilesetDefinitions, stripMapString} from '@dada78641/bwtoolsdata'
 import {loadBwGraphics} from './lib/gfx.js'
 import {mergeDefaultOptions} from './lib/options.js'
 import {renderImage} from './lib/render.js'
@@ -55,11 +56,18 @@ export function BwMapImage(file, userOptions = {}) {
     if (!mapData) {
       await _parseMapData()
     }
+
+    // If the tileset ID is not listed in the tileset definitions, this is an invalid map.
+    // Thus we assume this never results in undefined.
+    const tilesetData = tilesetDefinitions[mapData.tileset]
+
     return {
       mapTitle: mapData.title,
+      mapTitleStripped: stripMapString(mapData.title),
       mapDescription: mapData.description,
       mapHash: getMapHash(mapData),
       mapEncoding: mapData._encoding,
+      mapTilesetName: tilesetData.name,
       mapTilesetId: mapData.tileset,
       mapTileWidth: mapData.size[0],
       mapTileHeight: mapData.size[1]

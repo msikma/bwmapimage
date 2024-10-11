@@ -1,6 +1,6 @@
-[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![npm version](https://badge.fury.io/js/bwmapimage.svg)](https://badge.fury.io/js/bwmapimage)
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![npm version](https://badge.fury.io/js/@dada78641%2Fbwmapimage.svg)](https://badge.fury.io/js/@dada78641%2Fbwmapimage)
 
-# BwMapImage
+# @dada78641/bwmapimage
 
 Library for generating map images for *StarCraft: Brood War* and *Remastered*.
 
@@ -13,14 +13,14 @@ This is a wrapper library around the [bw-chk](https://github.com/ShieldBattery/b
 This library is available via npm.
 
 ```bash
-npm i --save bwmapimage
+npm i --save @dada78641/bwmapimage
 ```
 
 Basic usage involves passing a filename and getting an image buffer in return:
 
 ```js
 import fs from 'fs/promises'
-import {BwMapImage} from 'bwmapimage'
+import {BwMapImage} from '@dada78641/bwmapimage'
 
 const bwMapImage = new BwMapImage('(4)Vermeer SE_2.1.scm', {})
 const [buffer, metadata] = await bwMapImage.renderMapImage()
@@ -81,15 +81,19 @@ await bwMapImage.renderMapImage()
 * `metadata.fullHeight` **number**\
   Full height of the bitmap prior to resizing.
 * `metadata.mapTitle` **string**\
-  Raw title for the map. Contains escape sequences.
+  Raw title for the map. Can contain escape sequences.
+* `metadata.mapTitleStripped` **string**\
+  Title for the map with escape sequences stripped.
 * `metadata.mapDescription` **string**\
-  Raw description for the map. Contains escape sequences.
+  Description for the map.
 * `metadata.mapHash` **string**\
   XXH64 hash of the map data, for caching purposes.
 * `metadata.mapTileWidth` **number**\
   Map width in tiles.
 * `metadata.mapTileHeight` **number**\
   Map height in tiles.
+* `metadata.mapTilesetName` **string**\
+  Name of the tileset used.
 * `metadata.mapTilesetId` **number**\
   Tileset ID for the map—see [sctoolsdata](https://github.com/msikma/sctoolsdata) for more information.
 * `metadata.mapEncoding` **string**\
@@ -110,21 +114,27 @@ await bwMapImage.getMapMetadata()
 **Returns:**
 
 * `metadata.mapTitle` **string**\
-  Raw title for the map. Contains escape sequences.
+  Raw title for the map. Can contain escape sequences.
+* `metadata.mapTitleStripped` **string**\
+  Title for the map with escape sequences stripped.
 * `metadata.mapDescription` **string**\
-  Raw description for the map. Contains escape sequences.
+  Description for the map.
 * `metadata.mapHash` **string**\
   XXH64 hash of the map data, for caching purposes.
 * `metadata.mapTileWidth` **number**\
   Map width in tiles.
 * `metadata.mapTileHeight` **number**\
   Map height in tiles.
+* `metadata.mapTilesetName` **string**\
+  Name of the tileset used.
 * `metadata.mapTilesetId` **number**\
-  Tileset ID for the map—see [sctoolsdata](https://github.com/msikma/sctoolsdata) for more information.
+  Tileset ID for the map—see [@dada78641/bwtoolsdata](https://github.com/msikma/bwtoolsdata) for more information.
 * `metadata.mapEncoding` **string**\
   Character encoding for the map; typically either `"cp949"`, `"cp1252"` or `"utf8"`.
 
-This returns metadata about the map data itself, before the image is generated. This allows for you to, for example, check the `mapHash` against a cache. Note that the hash is specific to the map data, not to the generated image.
+This returns metadata about the map data itself, before the image is generated. This allows for you to, for example, check the `mapHash` against a cache.
+
+Note that the hash is specific to the map data, not to the generated image. It's designed specifically to be used for **caching** purposes, in that two maps with the same hash will always produce the same image.
 
 ### Options
 
@@ -140,13 +150,13 @@ The following options can be passed:
 | targetWidth | **number\|null** | `null` | Width the image will be resized to. See target size note below. |
 | targetHeight | **number\|null** | `null` | Height the image will be resized to. |
 | targetFit | **string\|null** | `"inside"` | Resizing fit; typically you want `"inside"`. See the [sharp api](https://sharp.pixelplumbing.com/api-resize) for other options. |
-| preHook | **function\|null** | `null` | Callback for manually utilizing the [sharp](https://github.com/lovell/sharp) object with the full size map image buffer (prior to resizing). |
+| preEncodeHook | **function\|null** | `null` | Callback for manually utilizing the [sharp](https://github.com/lovell/sharp) object with the full size map image buffer (prior to resizing). |
 
 Note that, by default, this library will create a lossless .png file at full size. This is extremely time consuming (on a fast machine it can take 3-5 seconds) and results in *huge* files (10–15 MB, 4096×4096 for a 128×128 tile map). It will also take a lot of memory to generate the initial uncompressed bitmap.
 
 To downscale the resulting image, you only need to set one of `targetWidth` or `targetHeight`; if you set one, the final image will be resized within a square by that size. So if you set one of them to `512`, a square map like [Fighting Spirit](https://liquipedia.net/starcraft/Fighting_Spirit) will end up being 512×512, and a slightly thinner map like [Invader](https://liquipedia.net/starcraft/Invader) will be 512×448.
 
-The `preHook` value can be used to manually do something with the [sharp](https://github.com/lovell/sharp) object before the image is finalized and returned. For example, here's a function that boosts the brightness of the generated images:
+The `preEncodeHook` value can be used to manually do something with the [sharp](https://github.com/lovell/sharp) object before the image is finalized and returned. For example, here's a function that boosts the brightness of the generated images:
 
 ```js
 /** Converts Photoshop style levels to linear multiplier/offset values. */
@@ -156,13 +166,13 @@ function levelsToLinear(min, max) {
   return [a, b]
 }
 
-await makeBwMapImage('map.scm', {
+await bwMapImage.renderMapImage('map.scm', {
   // see: https://sharp.pixelplumbing.com/api-operation#linear
-  preHook: image => image.linear(...levelsToLinear(0, 150))
+  preEncodeHook: image => image.linear(...levelsToLinear(0, 150))
 })
 ```
 
-The callback runs prior to resizing and compression.
+The callback runs *prior* to resizing and compression.
 
 ### Graphics
 

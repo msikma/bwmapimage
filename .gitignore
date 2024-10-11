@@ -1,7 +1,6 @@
 # Development files
 _source/
-_test.js
-_test*.js
+_test*.*
 _todo.txt
 
 # Logs
