@@ -5,6 +5,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import {describe, it, expect} from 'vitest'
 import fg from 'fast-glob'
+import type {Sharp} from 'sharp'
 import {getPackageRoot} from './lib/util.ts'
 import {BwMapImage} from './index.ts'
 
@@ -25,13 +26,20 @@ async function getRenderTests(files: string[]) {
   }
 }
 
+function levelsToLinear(min: number, max: number): [number, number] {
+  const a = 255 / (max - min)
+  const b = -min * a
+  return [a, b]
+}
+
 async function getTilesetRenderTest(tileset: string, extension: string) {
   return getRenderTests([path.join(tilesetsDir, `${tileset}.${extension}`)])
 }
 
 describe('BwMapImage', async () => {
+  const miscDir = path.resolve(path.join(testDir, 'misc'))
   const filetypes = ['**/*.scm', '**/*.scx']
-  const cases = await fg(filetypes, {cwd: path.join(testDir, 'misc'), absolute: true})
+  const cases = await fg(filetypes, {cwd: miscDir, absolute: true})
   const timeout = {timeout: 100000}
 
   it('renders map files to image correctly', timeout, () => getRenderTests(cases))
@@ -44,5 +52,14 @@ describe('BwMapImage', async () => {
     it('renders the jungle tileset correctly', timeout, () => getTilesetRenderTest('jungle', 'scm'))
     it('renders the platform tileset correctly', timeout, () => getTilesetRenderTest('platform', 'scm'))
     it('renders the twilight tileset correctly', timeout, () => getTilesetRenderTest('twilight', 'scx'))
+  })
+  it('applies pre-encode hooks', timeout, async () => {
+    const expected = await fs.readFile(`${miscDir}/jungletest_158.png`, null)
+    const res = await new BwMapImage(`${miscDir}/jungletest.scm`, {
+      preEncodeHook: (image: Sharp) => image.linear(...levelsToLinear(0, 158)),
+      encoderType: 'png',
+      encoderOptions: {compressionLevel: 9}
+    }).renderMapImage()
+    expect(res.buffer).toStrictEqual(expected)
   })
 })
