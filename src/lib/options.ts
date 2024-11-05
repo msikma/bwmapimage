@@ -13,7 +13,7 @@ interface MapImageBaseOptions {
   forceType?: InputType
   bwGraphicsPath?: string
   useInputDirectory?: boolean
-  preEncodeHook?: (image: Sharp) => Promise<void>
+  preEncodeHook?: (image: Sharp) => Promise<any> | any
 }
 
 interface NullEncoderOptions {
