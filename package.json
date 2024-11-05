@@ -1,7 +1,7 @@
 {
-  "name": "bwmapimage",
+  "name": "@dada78641/bwmapimage",
   "description": "Generates images of StarCraft: Brood War map/replay files",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "type": "module",
   "main": "dist/lib/index.cjs",
   "module": "dist/lib/index.js",
@@ -14,6 +14,13 @@
   },
   "bin": {
     "bwmapimage": "dist/cli/bwmapimage.cjs"
+  },
+  "files": [
+    "dist",
+    "readme.md"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [],
   "author": "",
