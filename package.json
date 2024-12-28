@@ -1,35 +1,53 @@
 {
   "name": "@dada78641/bwmapimage",
-  "version": "2.0.0",
-  "description": "Generates images of StarCraft: Brood War and Remastered maps",
-  "main": "index.js",
+  "description": "Generates images of StarCraft: Brood War map/replay files",
+  "version": "3.0.0",
   "type": "module",
+  "main": "dist/lib/index.cjs",
+  "module": "dist/lib/index.js",
+  "types": "dist/lib/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsup",
+    "watch": "tsup --watch src",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "bin": {
+    "bwmapimage": "dist/cli/bwmapimage.cjs"
   },
   "files": [
-    "lib/",
-    "index.js",
-    "package.json",
-    "license.md",
+    "dist",
     "readme.md"
-  ],
-  "keywords": [
-    "StarCraft",
-    "StarCraft: Remastered",
-    "StarCraft: Brood War"
   ],
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [],
   "author": "",
   "license": "MIT",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.9.0",
+    "@types/argparse": "^2.0.17",
+    "@types/mime-types": "^2.1.4",
+    "@types/node": "^22.8.6",
+    "@types/xxhashjs": "^0.2.4",
+    "eslint": "^9.0.0",
+    "fast-glob": "^3.3.2",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.0.0",
+    "vitest": "^2.1.3"
+  },
   "dependencies": {
-    "@dada78641/bwtoolsdata": "^1.4.0",
-    "bw-chk": "^1.3.0",
+    "@dada78641/bwmapgfx": "^0.0.1",
+    "argparse": "^2.0.1",
+    "bw-chk": "^1.4.1",
+    "filenamify": "^4.3.0",
     "jssuh": "^1.6.0",
-    "scm-extractor": "^1.0.6",
-    "sharp": "^0.33.0",
+    "mime-types": "^2.1.35",
+    "scm-extractor": "^1.1.0",
+    "sharp": "^0.33.5",
+    "strip-ansi": "^6.0.1",
     "xxhashjs": "^0.2.2"
   }
 }
