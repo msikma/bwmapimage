@@ -32,6 +32,7 @@
     "@types/node": "^22.8.6",
     "@types/xxhashjs": "^0.2.4",
     "eslint": "^9.0.0",
+    "jiti": "^2.4.2",
     "fast-glob": "^3.3.2",
     "tsup": "^8.3.5",
     "typescript": "^5.6.3",
